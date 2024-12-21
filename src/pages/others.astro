@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HorizontalCard from "../components/HorizontalCard.astro";
+---
+
+<BaseLayout title="Projects" sideBarActiveItemID="services">
+  <div>
+    <div class="text-3xl w-full font-bold mb-5">Others</div>
+  </div>
+
+  <HorizontalCard
+    title="TOKYO AI Fashion Week 2024 A/W 優秀賞"
+    img="https://tokyoaifashionweek.com/cdn/shop/products/0310aw24052-09.png?v=1710311546"
+    desc="応募総数 約1,900点の上位3作品に選出"
+    url="https://tokyoaifashionweek.com/pages/2024-aw-winners"
+  />
+  <div class="divider my-0"></div>
+</BaseLayout>
