@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 
 const ZENN_RSS_URL = "https://zenn.dev/t0daaay/feed";
 
-const fetchRSS = async (url) => {
+const fetchRSS = async (url: string) => {
   const res = await fetch(url);
   const text = await res.text();
   const parser = new XMLParser({
