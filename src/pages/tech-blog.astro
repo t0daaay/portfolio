@@ -1,32 +1,69 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HorizontalCard from "../components/HorizontalCard.astro";
+import { XMLParser } from "fast-xml-parser";
+import dayjs from "dayjs";
+
+const ZENN_RSS_URL = "https://zenn.dev/t0daaay/feed";
+
+const fetchRSS = async (url) => {
+  const res = await fetch(url);
+  const text = await res.text();
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "@_",
+  });
+  const json = parser.parse(text);
+
+  return json.rss.channel.item.map((item) => ({
+    title: item.title || "",
+    desc: dayjs(item.pubDate).format("YYYY-MM-DD") || "",
+    img: item.enclosure?.["@_url"] || "",
+    url: item.link || "",
+  }));
+};
+
+const zennArticles = await fetchRSS(ZENN_RSS_URL);
+
+const techArticles = [
+  {
+    title: "AST の基礎を理解：TypeScript でコードを解析し操作する🔰",
+    img: "https://cdn.image.st-hatena.com/image/scale/44070454ec920d1c43fdbaa0475fc23f825b6d07/backend=imagemagick;height=500;quality=80;version=1;width=500/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fb%2Fbengo4%2F20241216%2F20241216000029.png",
+    desc: "2024-12-16",
+    url: "https://creators.bengo4.com/entry/2024/12/16/000000",
+  },
+  {
+    title: "Vue 3.5 の新機能・改善点まとめ",
+    img: "https://cdn.image.st-hatena.com/image/scale/0b215964cd015c9abf6f6cb54fe5950784fe1c84/backend=imagemagick;height=500;quality=80;version=1;width=500/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fb%2Fbengo4%2F20240920%2F20240920113002.png",
+    desc: "2024-09-20",
+    url: "https://creators.bengo4.com/entry/2024/09/20/113000",
+  },
+  {
+    title: "モブプロが最高だった話",
+    img: "https://cdn.image.st-hatena.com/image/scale/14e7a885acf5f0bf29f8a7c25fbe53871233e1ec/backend=imagemagick;height=500;quality=80;version=1;width=500/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fb%2Fbengo4%2F20240226%2F20240226090015.png",
+    desc: "2024-02-26",
+    url: "https://creators.bengo4.com/entry/2024/02/26/080000",
+  },
+];
+
+const allArticles = [...zennArticles, ...techArticles].sort(
+  (a, b) => new Date(b.desc).getTime() - new Date(a.desc).getTime()
+);
 ---
 
 <BaseLayout title="Tech Blog" sideBarActiveItemID="services">
-  <div>
-    <div class="text-3xl w-full font-bold mb-5">Tech Blog</div>
-  </div>
-
-  <HorizontalCard
-    title="AST の基礎を理解：TypeScript でコードを解析し操作する🔰"
-    img="https://cdn.image.st-hatena.com/image/scale/44070454ec920d1c43fdbaa0475fc23f825b6d07/backend=imagemagick;height=500;quality=80;version=1;width=500/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fb%2Fbengo4%2F20241216%2F20241216000029.png"
-    desc="2024-12-16"
-    url="https://creators.bengo4.com/entry/2024/12/16/000000"
-  />
-  <div class="divider my-0"></div>
-  <HorizontalCard
-    title="Vue 3.5 の新機能・改善点まとめ"
-    img="https://cdn.image.st-hatena.com/image/scale/0b215964cd015c9abf6f6cb54fe5950784fe1c84/backend=imagemagick;height=500;quality=80;version=1;width=500/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fb%2Fbengo4%2F20240920%2F20240920113002.png"
-    desc="2024-09-20"
-    url="https://creators.bengo4.com/entry/2024/09/20/113000"
-  />
-  <div class="divider my-0"></div>
-  <HorizontalCard
-    title="モブプロが最高だった話"
-    img="https://cdn.image.st-hatena.com/image/scale/14e7a885acf5f0bf29f8a7c25fbe53871233e1ec/backend=imagemagick;height=500;quality=80;version=1;width=500/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fb%2Fbengo4%2F20240226%2F20240226090015.png"
-    desc="2024-02-26"
-    url="https://creators.bengo4.com/entry/2024/02/26/080000"
-  />
-  <div class="divider my-0"></div>
+  <div class="text-3xl w-full font-bold mb-5">Tech Blog</div>
+  {
+    allArticles.map((article) => (
+      <>
+        <HorizontalCard
+          title={article.title}
+          desc={article.desc}
+          img={article.img}
+          url={article.url}
+        />
+        <div class="divider my-0" />
+      </>
+    ))
+  }
 </BaseLayout>
